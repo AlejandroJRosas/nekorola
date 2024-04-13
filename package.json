@@ -4,9 +4,13 @@
   "description": "",
   "main": "index.js",
   "type": "module",
+  "imports": {
+    "@": "file:src"
+  },
   "scripts": {
-    "dev": "nodemon src/index.js",
-    "start": "node src/index.js"
+    "dev": "nodemon --env-file=.env src/index.js",
+    "start": "node --env-file=.env src/index.js",
+    "deploy:commands": "node --env-file=.env src/deploy-commands.js"
   },
   "keywords": [],
   "author": "",
