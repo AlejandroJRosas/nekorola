@@ -1,5 +1,5 @@
 import { join } from "node:path";
-import fs from "node:fs";
+import { readdirSync } from "node:fs";
 import { Client, Events, GatewayIntentBits, Collection } from "discord.js";
 
 import { BOT_TOKEN } from "./config.js";
@@ -13,9 +13,10 @@ const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
   const commandsPath = join(foldersPath, folder);
-  const commandFiles = fs
-    .readdirSync(commandsPath)
-    .filter((file) => file.endsWith(".js"));
+  const commandFiles = readdirSync(commandsPath).filter((file) =>
+    file.endsWith(".js")
+  );
+
   for (const file of commandFiles) {
     const filePath = join(commandsPath, file);
     const command = await import(`file://${filePath}`);
