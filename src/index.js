@@ -9,7 +9,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.commands = new Collection();
 
 const foldersPath = join(import.meta.dirname, "commands");
-const commandFolders = fs.readdirSync(foldersPath);
+const commandFolders = readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
   const commandsPath = join(foldersPath, folder);
