@@ -1,27 +1,41 @@
-import { join } from "node:path";
-import { readdirSync } from "node:fs";
-import { Client, Events, GatewayIntentBits, Collection } from "discord.js";
+import { join } from 'node:path';
+import { readdirSync } from 'node:fs';
+import { Client, Events, GatewayIntentBits, Collection } from 'discord.js';
 
-import { BOT_TOKEN } from "./config.js";
+import { BOT_TOKEN } from './config.js';
+import { Player } from 'discord-player';
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates],
+});
+
+/////
+const player = new Player(client);
+
+await player.extractors.loadDefault();
+
+player.events.on('playerStart', (queue, track) => {
+  // we will later define queue.metadata object while creating the queue
+  queue.metadata.channel.send(`Started playing **${track.title}**!`);
+});
+/////
 
 client.commands = new Collection();
 
-const foldersPath = join(import.meta.dirname, "commands");
+const foldersPath = join(import.meta.dirname, 'commands');
 const commandFolders = readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
   const commandsPath = join(foldersPath, folder);
   const commandFiles = readdirSync(commandsPath).filter((file) =>
-    file.endsWith(".js")
+    file.endsWith('.js')
   );
 
   for (const file of commandFiles) {
     const filePath = join(commandsPath, file);
     const command = await import(`file://${filePath}`);
 
-    if ("data" in command && "execute" in command) {
+    if ('data' in command && 'execute' in command) {
       client.commands.set(command.data.name, command);
     } else {
       console.warn(
@@ -51,12 +65,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
     console.error(error);
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
-        content: "There was an error while executing this command!",
+        content: 'There was an error while executing this command!',
         ephemeral: true,
       });
     } else {
       await interaction.reply({
-        content: "There was an error while executing this command!",
+        content: 'There was an error while executing this command!',
         ephemeral: true,
       });
     }
